@@ -1,0 +1,38 @@
+- name: Install dependencies
+  hosts: webservers
+  become: true
+  tasks:
+   - name: Install apache2
+     yum:
+       name: httpd
+       update_cache: yes
+       state: latest
+   - name: Install firewalls
+     package:
+       name: firewalld
+       state: present
+
+- name: Start services
+  hosts: webservers
+  become: true
+  vars:
+    ansible_python_interpreter: /usr/bin/python
+  tasks:
+   - name: Start firewalld daemon
+     systemd:
+       name: firewalld
+       state: started
+   - name: Open firewall
+     ansible.posix.firewalld:
+       service: http
+       permanent: true
+       state: enabled
+   - name: Reload firewalld
+     systemd:
+       name: firewalld
+       state: reloaded
+   - name: Start httpd
+     ansible.builtin.service:
+       name: httpd
+       enabled: true
+       state: started
