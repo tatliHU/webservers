@@ -23,7 +23,6 @@ module "ec2_internet" {
   replicas          = var.replicas
   ami               = var.ami
   ec2_instance_type = var.ec2_instance_type
-  region            = var.region
   public_key        = var.public_key
   resource_tags     = var.resource_tags
 }
@@ -41,11 +40,13 @@ resource "time_sleep" "wait_for_ec2" {
   depends_on      = [module.ec2_internet]
 }
 
+/*
 module "lambda_scraper" {
   source     = "./modules/lambda_scraper"
   url        = formatlist("http://%s", module.ec2_internet.ec2_public_ip)
   depends_on = [time_sleep.wait_for_ec2]
 }
+
 
 data "http" "get_request" {
   count = var.replicas
@@ -62,3 +63,4 @@ data "http" "get_request" {
     }
   }
 }
+*/

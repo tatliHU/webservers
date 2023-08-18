@@ -13,5 +13,4 @@
 - ECS
 - ElasticBeanstalk
 - AppRunner
-- Support for API Gateway
 - Examples for the modules
