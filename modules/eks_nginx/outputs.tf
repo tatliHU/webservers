@@ -1,8 +1,9 @@
 data "kubernetes_service" "nginx" {
   metadata {
     name      = "nginx"
-    namespace = "nginx"
+    namespace = var.namespace
   }
+  depends_on = [helm_release.nginx]
 }
 
 output "public_ip" {

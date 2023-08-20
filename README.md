@@ -13,4 +13,3 @@
 - ECS
 - ElasticBeanstalk
 - AppRunner
-- Examples for the modules

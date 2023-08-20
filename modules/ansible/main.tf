@@ -1,7 +1,5 @@
-terraform {
-  required_providers {
-  }
-}
+# THE ANSIBLE PROVIDER HAD COMPATIBILITY ISSUES SO I USE LOCAL EXEC INSTEAD
+# THIS IS A TERRIBLE APPOROACH AND SHOULD NOT BE USED IN PRODUCTION ENV
 
 locals {
   inventory = {
@@ -28,6 +26,6 @@ resource "null_resource" "run_ansible" {
     count      = length(var.urls) > 0 ? 1 : 0
     depends_on = [local_file.inventory]
     provisioner "local-exec" {
-        command = "ansible-playbook -i ${path.module}/inventory.yaml ${path.module}/playbook.yaml"
+        command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ${path.module}/inventory.yaml ${path.module}/playbook.yaml"
   }
 }

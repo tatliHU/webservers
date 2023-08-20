@@ -1,7 +1,7 @@
 variable "url" {
-  description = "URLs to scrape"
-  type        = list(string)
-  default     = ["https://www.google.com", "https://www.facebook.com"]
+  description = "URL to scrape"
+  type        = string
+  default     = "https://www.telex.hu"
 }
 
 variable "resource_tags" {

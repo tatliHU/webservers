@@ -134,8 +134,8 @@ resource "aws_lb_listener" "internet_lb_listener" {
 }
 
 resource "aws_lb_target_group_attachment" "ec2_targets" {
-  for_each         = toset(aws_instance.internet_ec2[*].id)
+  count            = var.replicas
   target_group_arn = aws_lb_target_group.ec2_target.arn
-  target_id        = each.value
+  target_id        = aws_instance.internet_ec2[count.index].id
   port             = 80
 }

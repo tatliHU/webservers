@@ -36,3 +36,7 @@ terraform.rc
 # Ignore SSH keys for security just in case
 *.pem
 *.pub
+
+# Generated files
+./modules/ansible/inventory.yaml
+lambda_function_payload.zip

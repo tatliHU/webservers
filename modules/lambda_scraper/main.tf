@@ -57,7 +57,7 @@ resource "aws_lambda_function" "scraper" {
   
   environment {
     variables = {
-      url = jsonencode(var.url)
+      url = var.url
     }
   }
   tags = var.resource_tags

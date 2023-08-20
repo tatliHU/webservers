@@ -7,20 +7,6 @@ terraform {
   }
 }
 
-# provider "aws" {
-#   region = "us-east-1"
-# }
-
-# provider "helm" {
-#     kubernetes {
-#         config_path = "~/.kube/config"
-#   }
-# }
-
-# provider "kubernetes" {
-#   config_path    = "~/.kube/config"
-# }
-
 # NETWORKING
 resource "aws_vpc" "eks_cluster" {
   cidr_block = "10.0.0.0/16"
@@ -162,10 +148,20 @@ resource "aws_eks_node_group" "node" {
   instance_types = ["t3.micro"]
 }
 
+# SET KUBECONFIG
+data "aws_region" "current" {}
+resource "null_resource" "update_kubectl" {
+    depends_on = [aws_eks_cluster.eks_cluster, aws_eks_node_group.node]
+    provisioner "local-exec" {
+        command = "aws eks --region ${data.aws_region.current.name} update-kubeconfig --name ${var.cluster_name}"
+    }
+}
+
 # HELM CHART
 resource "helm_release" "nginx" {
   name  = "nginx"
   chart = "oci://registry-1.docker.io/bitnamicharts/nginx"
-  namespace        = "nginx"
+  namespace        = var.namespace
   create_namespace = true
+  depends_on = [null_resource.update_kubectl]
 }

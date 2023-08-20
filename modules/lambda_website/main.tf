@@ -7,10 +7,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = "us-east-2"
-}
-
 # Role to run lambda
 data "aws_iam_policy_document" "assume_role" {
   statement {
