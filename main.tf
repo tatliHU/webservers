@@ -27,6 +27,7 @@ provider "aws" {
 #   ec2_instance_type = var.ec2_instance_type
 #   public_key        = var.public_key
 #   resource_tags     = var.resource_tags
+#   log_collection    = true
 # }
 # output "loadbalancer_ip" {
 #   value = module.ec2_internet.loadbalancer_ip

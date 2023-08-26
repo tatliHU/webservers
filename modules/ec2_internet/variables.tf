@@ -42,3 +42,9 @@ variable "replicas" {
     error_message = "Number of replicas shuld be between 1 and 3."
   }
 }
+
+variable "log_collection" {
+  description = "Enable LoadBalancer access log collection to S3."
+  type        = bool
+  default     = false
+}

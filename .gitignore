@@ -40,3 +40,6 @@ terraform.rc
 # Generated files
 ./modules/ansible/inventory.yaml
 lambda_function_payload.zip
+
+# I don't want to fix versions
+.terraform.lock.hcl

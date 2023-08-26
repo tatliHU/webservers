@@ -100,6 +100,39 @@ resource "aws_security_group" "allow_ssh" {
   tags = var.resource_tags
 }
 
+# S3 for log collection of LoadBalancer
+resource "aws_s3_bucket" "logs" {
+  count         = var.log_collection ? 1 : 0
+  bucket_prefix = "website-lb-logs-"
+  force_destroy = true
+  tags          = var.resource_tags
+}
+
+data "aws_elb_service_account" "main" {}
+
+data "aws_iam_policy_document" "logs_role" {
+  count = var.log_collection ? 1 : 0
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_elb_service_account.main.arn]
+    }
+    actions = ["s3:PutObject"]
+    resources = [
+      aws_s3_bucket.logs[0].arn,
+      "${aws_s3_bucket.logs[0].arn}/*",
+    ]
+  }
+}
+
+resource "aws_s3_bucket_policy" "log_collection" {
+  count  = var.log_collection ? 1 : 0
+  bucket = aws_s3_bucket.logs[0].id
+  policy = data.aws_iam_policy_document.logs_role[0].json
+}
+
+# LoadBalancer
 resource "aws_lb" "internet_load_balancer" {
   name               = "ec2-internet-loadbalancer"
   load_balancer_type = "application"
@@ -107,11 +140,10 @@ resource "aws_lb" "internet_load_balancer" {
   security_groups    = [aws_security_group.allow_ssh.id]
   subnets            = [aws_subnet.internet_sn[0].id, aws_subnet.internet_sn[1].id]
 
-  #access_logs {
-  #  bucket        = "foo"
-  #  bucket_prefix = "bar"
-  #  interval      = 60
-  #}
+  access_logs {
+    bucket  = var.log_collection ? aws_s3_bucket.logs[0].id : ""
+    enabled = var.log_collection
+  }
 
   tags = var.resource_tags
 }
