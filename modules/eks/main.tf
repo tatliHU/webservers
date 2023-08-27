@@ -156,12 +156,3 @@ resource "null_resource" "update_kubectl" {
         command = "aws eks --region ${data.aws_region.current.name} update-kubeconfig --name ${var.cluster_name}"
     }
 }
-
-# HELM CHART
-resource "helm_release" "nginx" {
-  name  = "nginx"
-  chart = "oci://registry-1.docker.io/bitnamicharts/nginx"
-  namespace        = var.namespace
-  create_namespace = true
-  depends_on = [null_resource.update_kubectl]
-}

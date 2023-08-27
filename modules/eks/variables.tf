@@ -14,12 +14,6 @@ variable "cluster_name" {
   default     = "nginx"
 }
 
-variable "namespace" {
-  description = "Namespace for Nginx"
-  type        = string
-  default     = "nginx"
-}
-
 variable "kubernetes_version" {
   description = "Kubernetes version"
   type        = string

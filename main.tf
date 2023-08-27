@@ -74,6 +74,14 @@ provider "aws" {
 # }
 
 ###########################################################
+# EKS cluster
+###########################################################
+# module "eks" {
+#   source = "./modules/eks"
+#   kubernetes_version = "1.27"
+# }
+
+###########################################################
 # NGINX on EKS with Helm
 ###########################################################
 # provider "helm" {
@@ -81,16 +89,28 @@ provider "aws" {
 #     config_path = "~/.kube/config"
 #   }
 # }
+# module "helm_website" {
+#   source = "./modules/helm_website"
+#   namespace = "nginx"
+#   depends_on = [module.eks]
+# }
+# output "website_url" {
+#   value = module.helm_website.website_url
+# }
+
+###########################################################
+# NGINX on EKS with plain Kubernetes
+###########################################################
 # provider "kubernetes" {
 #   config_path    = "~/.kube/config"
 # }
-
-# module "eks_nginx" {
-#   source = "./modules/eks_nginx"
-#   kubernetes_version = "1.27"
+# module "kubernetes_website" {
+#   source = "./modules/kubernetes_website"
+#   namespace = "webserver"
+#   depends_on = [module.eks]
 # }
 # output "website_url" {
-#   value = module.eks_nginx.public_ip
+#   value = module.kubernetes_website.kubernetes_url
 # }
 
 ###########################################################
