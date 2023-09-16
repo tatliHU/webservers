@@ -6,10 +6,10 @@
 - EKS + plain Kubernetes
 - EKS + Helm
 - Lambda function
+- AppRunner
 ## Connectibility check:
 - Local HTTP call
 - Lambda function
 ### Planned features:
 - ECS
 - ElasticBeanstalk
-- AppRunner

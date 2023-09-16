@@ -114,6 +114,19 @@ provider "aws" {
 # }
 
 ###########################################################
+# NGINX on App Runner
+###########################################################
+# module "app_runner" {
+#   source = "./modules/app_runner"
+#   image             = "public.ecr.aws/nginx/nginx:latest"
+#   ECR_visibility    = "public"
+#   port              = 80
+# }
+# output "website_url" {
+#   value = module.app_runner.website_url
+# }
+
+###########################################################
 # HealthCheck with Lambda
 ###########################################################
 # resource "time_sleep" "wait_for_service" {
