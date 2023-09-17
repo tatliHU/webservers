@@ -5,11 +5,12 @@
 - S3 static hosting
 - EKS + plain Kubernetes
 - EKS + Helm
+- ECS with Fargate
 - Lambda function
 - AppRunner
 ## Connectibility check:
 - Local HTTP call
 - Lambda function
 ### Planned features:
-- ECS
-- ElasticBeanstalk
+- Health Checks
+- Api Gateways instead of LoadBalancers

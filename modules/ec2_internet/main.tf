@@ -62,7 +62,7 @@ resource "aws_instance" "internet_ec2" {
 }
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
+  name        = "allow_ssh_http_https"
   description = "Allow SSH inbound traffic"
   vpc_id      = aws_vpc.internet_vpc.id
 
