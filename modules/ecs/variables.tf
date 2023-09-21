@@ -19,3 +19,9 @@ variable "image" {
   type        = string
   default     = "public.ecr.aws/nginx/nginx:latest"
 }
+
+variable "replicas" {
+  description = "Number of webserver containers to run"
+  type        = number
+  default     = 1
+}

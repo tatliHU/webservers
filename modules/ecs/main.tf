@@ -34,7 +34,6 @@ resource "aws_route_table" "internet_route_table" {
 }
 
 resource "aws_route_table_association" "internet_route_table_association" {
-  count          = 2
   subnet_id      = aws_subnet.internet_sn.id
   route_table_id = aws_route_table.internet_route_table.id
 }
@@ -108,7 +107,7 @@ resource "aws_ecs_service" "nginx" {
   name            = var.service_name
   cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.webserver.arn
-  desired_count   = 1
+  desired_count   = var.replicas
   launch_type     = "FARGATE"
   network_configuration {
     subnets = [aws_subnet.internet_sn.id]

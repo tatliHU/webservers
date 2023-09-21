@@ -12,5 +12,5 @@
 - Local HTTP call
 - Lambda function
 ### Planned features:
+- Api Gateways for ECS
 - Health Checks
-- Api Gateways instead of LoadBalancers
