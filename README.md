@@ -14,3 +14,4 @@
 ### Planned features:
 - Api Gateways for ECS
 - Health Checks
+- LoadBalancer should not exist if replica count is 1

@@ -7,6 +7,7 @@ terraform {
   }
 }
 
+# Network
 resource "aws_vpc" "vpc" {
   cidr_block = "10.1.0.0/16"
   tags = var.resource_tags
@@ -69,6 +70,34 @@ resource "aws_security_group" "allow_http_https" {
   tags = var.resource_tags
 }
 
+# Network LoadBalancer
+resource "aws_lb" "ecs" {
+  name               = "ecs-webserver"
+  internal           = false
+  load_balancer_type = "network"
+  subnets            = [aws_subnet.internet_sn.id]
+  tags = var.resource_tags
+}
+
+resource "aws_lb_target_group" "ecs" {
+  name        = "ecs-target"
+  target_type = "ip"
+  port        = 80
+  protocol    = "TCP"
+  vpc_id      = aws_vpc.vpc.id
+}
+
+resource "aws_lb_listener" "ecs" {
+  load_balancer_arn = aws_lb.ecs.arn
+  port              = "80"
+  protocol          = "TCP" 
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ecs.arn
+  }
+}
+
+# ECS
 resource "aws_ecs_cluster" "cluster" {
   name = "terraform-cluster"
   setting {
@@ -92,7 +121,15 @@ resource "aws_ecs_task_definition" "webserver" {
     "containerPort": 80,
     "cpu": 1024,
     "memory": 2048,
-    "essential": true
+    "essential": true,
+    "portMappings":
+      [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ]
   }
 ]
 TASK_DEFINITION
@@ -115,5 +152,10 @@ resource "aws_ecs_service" "nginx" {
     security_groups  = [aws_security_group.allow_http_https.id]
   }
   enable_ecs_managed_tags = true
+  load_balancer {
+    target_group_arn = aws_lb_target_group.ecs.arn
+    container_name   = var.service_name
+    container_port   = 80
+  }
   tags           = var.resource_tags
 }

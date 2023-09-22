@@ -129,13 +129,13 @@ provider "aws" {
 ###########################################################
 # NGINX on ECS
 ###########################################################
-module "ecs" {
-  source = "./modules/ecs"
-  replicas = 2
-}
-output "website_ips" {
-  value = module.ecs.network_interfaces
-}
+# module "ecs" {
+#   source = "./modules/ecs"
+#   replicas = 2
+# }
+# output "loadbalancer_ip" {
+#     value = module.ecs.loadbalancer_ip
+# }
 
 ###########################################################
 # HealthCheck with Lambda
