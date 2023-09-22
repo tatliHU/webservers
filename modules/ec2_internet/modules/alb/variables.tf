@@ -1,23 +1,11 @@
 variable "resource_tags" {
   description = "Tags to set for all resources"
   type        = map(string)
-  default     = {
-    Name        = "ec2-internet",
-    project     = "terraform-app",
-    managed_by  = "terraform"
-  }
 }
 
 variable "log_collection" {
   description = "Enable LoadBalancer access log collection to S3."
   type        = bool
-  default     = false
-}
-
-variable "log_collection_bucket_id" {
-  description = "Bucket used for log collection"
-  type        = string
-  default     = ""
 }
 
 variable "security_group_id" {

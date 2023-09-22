@@ -100,38 +100,7 @@ resource "aws_security_group" "allow_ssh" {
   tags = var.resource_tags
 }
 
-# S3 for log collection of LoadBalancer
-resource "aws_s3_bucket" "logs" {
-  count         = var.log_collection && var.replicas > 1 ? 1 : 0
-  bucket_prefix = "website-lb-logs-"
-  force_destroy = true
-  tags          = var.resource_tags
-}
-
-data "aws_elb_service_account" "main" {}
-
-data "aws_iam_policy_document" "logs_role" {
-  count = var.log_collection && var.replicas > 1 ? 1 : 0
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = [data.aws_elb_service_account.main.arn]
-    }
-    actions = ["s3:PutObject"]
-    resources = [
-      aws_s3_bucket.logs[0].arn,
-      "${aws_s3_bucket.logs[0].arn}/*",
-    ]
-  }
-}
-
-resource "aws_s3_bucket_policy" "log_collection" {
-  count  = var.log_collection && var.replicas > 1 ? 1 : 0
-  bucket = aws_s3_bucket.logs[0].id
-  policy = data.aws_iam_policy_document.logs_role[0].json
-}
-
+# LoadBalancer
 module "alb" {
   source = "./modules/alb"
   count  = var.replicas > 1 ? 1 : 0
@@ -140,6 +109,5 @@ module "alb" {
   security_group_id        = aws_security_group.allow_ssh.id
   ec2_ids                  = aws_instance.internet_ec2[*].id
   log_collection           = var.log_collection
-  log_collection_bucket_id = var.log_collection ? aws_s3_bucket.logs[0].id : ""
   resource_tags            = var.resource_tags
 }

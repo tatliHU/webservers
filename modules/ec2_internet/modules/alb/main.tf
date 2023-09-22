@@ -15,7 +15,7 @@ resource "aws_lb" "internet_load_balancer" {
   subnets            = var.subnet_ids
 
   access_logs {
-    bucket  = var.log_collection_bucket_id
+    bucket  = aws_s3_bucket.logs[0].id
     enabled = var.log_collection
   }
 
