@@ -29,12 +29,12 @@ provider "aws" {
 #   resource_tags     = var.resource_tags
 #   log_collection    = true
 # }
-# output "loadbalancer_ip" {
-#   value = module.ec2_internet.loadbalancer_ip
+# output "service_url" {
+#   value = module.ec2_internet.service_url
 # }
-# output "ec2_connect_command" {
+# output "ssh_connect_command" {
 #   value = [
-#     for ip in module.ec2_internet.ec2_public_ip : "ssh ${var.ami_user}@${ip}"
+#     for ip in module.ec2_internet.ssh_ips : "ssh ${var.ami_user}@${ip}"
 #   ]
 # }
 

@@ -102,7 +102,7 @@ resource "aws_security_group" "allow_ssh" {
 
 # S3 for log collection of LoadBalancer
 resource "aws_s3_bucket" "logs" {
-  count         = var.log_collection ? 1 : 0
+  count         = var.log_collection && var.replicas > 1 ? 1 : 0
   bucket_prefix = "website-lb-logs-"
   force_destroy = true
   tags          = var.resource_tags
@@ -111,7 +111,7 @@ resource "aws_s3_bucket" "logs" {
 data "aws_elb_service_account" "main" {}
 
 data "aws_iam_policy_document" "logs_role" {
-  count = var.log_collection ? 1 : 0
+  count = var.log_collection && var.replicas > 1 ? 1 : 0
   statement {
     effect = "Allow"
     principals {
@@ -127,47 +127,19 @@ data "aws_iam_policy_document" "logs_role" {
 }
 
 resource "aws_s3_bucket_policy" "log_collection" {
-  count  = var.log_collection ? 1 : 0
+  count  = var.log_collection && var.replicas > 1 ? 1 : 0
   bucket = aws_s3_bucket.logs[0].id
   policy = data.aws_iam_policy_document.logs_role[0].json
 }
 
-# LoadBalancer
-resource "aws_lb" "internet_load_balancer" {
-  name               = "ec2-internet-loadbalancer"
-  load_balancer_type = "application"
-  internal           = false
-  security_groups    = [aws_security_group.allow_ssh.id]
-  subnets            = [aws_subnet.internet_sn[0].id, aws_subnet.internet_sn[1].id]
-
-  access_logs {
-    bucket  = var.log_collection ? aws_s3_bucket.logs[0].id : ""
-    enabled = var.log_collection
-  }
-
-  tags = var.resource_tags
-}
-
-resource "aws_lb_target_group" "ec2_target" {
-  name     = "ec2-target"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.internet_vpc.id
-}
-
-resource "aws_lb_listener" "internet_lb_listener" {
-  load_balancer_arn = aws_lb.internet_load_balancer.arn
-  port              = "80"
-  protocol          = "HTTP" 
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.ec2_target.arn
-  }
-}
-
-resource "aws_lb_target_group_attachment" "ec2_targets" {
-  count            = var.replicas
-  target_group_arn = aws_lb_target_group.ec2_target.arn
-  target_id        = aws_instance.internet_ec2[count.index].id
-  port             = 80
+module "alb" {
+  source = "./modules/alb"
+  count  = var.replicas > 1 ? 1 : 0
+  vpc_id                   = aws_vpc.internet_vpc.id
+  subnet_ids               = [aws_subnet.internet_sn[0].id, aws_subnet.internet_sn[1].id]
+  security_group_id        = aws_security_group.allow_ssh.id
+  ec2_ids                  = aws_instance.internet_ec2[*].id
+  log_collection           = var.log_collection
+  log_collection_bucket_id = var.log_collection ? aws_s3_bucket.logs[0].id : ""
+  resource_tags            = var.resource_tags
 }
